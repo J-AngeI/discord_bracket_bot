@@ -214,12 +214,3 @@ def get_prediction_accuracy(id: int, prediction: Prediction) -> int:
     
     prediction.accuracy = score
     return score
-
-
-#link = "https://www.start.gg/tournament/fall-2025-rpi-smash-weekly-8/event/ultimate-singles"
-#print (get_entrants_from_link(link))
-#test = Prediction("jack", ['Bobingstern', 'Down$hift', 'Tarineko*', 'PS2? | lumenstorm.', 'BHB | CRUMP', 'pinkfluffystar', 'TG', 'HISCORE35'])
-#print (get_prediction_accuracy(link, test))
-#print (test.accuracy)
-
-# ['Bobingstern', 'Down$hift', 'Tarineko*', 'BHB | CRUMP', 'pinkfluffystar', 'PS2? | lumenstorm.', 'HISCORE35', 'TG']
