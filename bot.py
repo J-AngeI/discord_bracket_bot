@@ -24,7 +24,14 @@ acceptingPredictions = False
 
 admin_role="Admin"
 bot_channel_name="bot"
+bot_channel_id=1467376310484598844
 announcements_channel_name="announcements"
+
+def update():
+    global currentEvent_entrants
+
+    currentEvent_entrants = startgg.get_entrants(eventID)
+
 
 @bot.event
 async def on_ready():
@@ -32,10 +39,18 @@ async def on_ready():
 
 @bot.command(help="Prints out list of tournament entrants")
 async def entrants(ctx):
+    if ctx.channel.name != bot_channel_name:
+        return
+    
     if eventID == 0:
         await ctx.send("Error: No tournament currently available")
         return
 
+    update()
+    if len(currentEvent_entrants) == 0 or currentEvent_entrants == None:
+        await ctx.send("No entrants are signed up yet.")
+        return
+    
     e_string = ""
     for entrant in currentEvent_entrants:
         e_string += entrant + ", "
@@ -48,7 +63,7 @@ async def close(ctx):
     global acceptingPredictions
     acceptingPredictions = False
 
-    bot_channel=bot.get_channel(1467376310484598844)
+    bot_channel=bot.get_channel(bot_channel_id)
     await bot_channel.send("Predictions have been closed!")
 
 @bot.command(help="Opens predictions. Admin only.")
@@ -57,12 +72,12 @@ async def open(ctx):
     global acceptingPredictions
     acceptingPredictions = True
 
-    bot_channel=bot.get_channel(1467376310484598844)
+    bot_channel=bot.get_channel(bot_channel_id)
     await bot_channel.send("Predictions have been opened!")
 
 @bot.command(help="Makes a prediction. Format as following (each colon and space is important!): !p 1:bob 2:bill 3:Juan 4:Jill 5:Big soda 5:Sean 7:Bobith 7:Geoff")
 async def p(ctx):
-    global predictions, acceptingPredictions
+    global predictions, acceptingPredictions, currentEvent_entrants
 
     if ctx.channel.name != bot_channel_name:
         return
@@ -73,6 +88,11 @@ async def p(ctx):
 
     if eventID == 0:
         await ctx.send("Error: No tournament currently available")
+        return
+    
+    update()
+    if len(currentEvent_entrants) < 8:
+        await ctx.send("Wait until 8 entrants are signed up before making a prediction.")
         return
 
     p = ctx.message.content
@@ -115,6 +135,11 @@ async def pp(ctx):
     
     if eventID == 0:
         await ctx.send("Error: No tournament currently available")
+        return
+
+    if len(predictions) == 0:
+        await ctx.send("No predictions have been made yet")
+        return
 
     await ctx.send("Printing predictions:\n")
 
