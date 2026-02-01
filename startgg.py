@@ -181,9 +181,7 @@ def get_standings_from_link(link: str) -> list[str]:
 
     return standings
 
-def get_prediction_accuracy(link: str, prediction: Prediction) -> int:
-    slug = get_slug(link)
-    id = get_id(slug)
+def get_prediction_accuracy(id: int, prediction: Prediction) -> int:
     standings = get_standings(id)
 
     p_standings = prediction.prediction
