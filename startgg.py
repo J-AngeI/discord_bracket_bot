@@ -99,11 +99,9 @@ def get_entrants(id: int) -> list[str]:
         print(f"Error: {e}")
         return
 
-def main(link: str):
+def get_entrants_from_link(link: str):
     slug = get_slug(link)
     id = get_id(slug)
     tags = get_entrants(id)
-    print (tags)
 
-link = "https://www.start.gg/tournament/spring-2026-rpi-smash-weekly-2/event/ultimate-singles"
-main(link)
+    return tags
