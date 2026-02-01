@@ -13,22 +13,65 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-bot = commands.Bot(command_prefix='/', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+currentEvent = ""
+currentEvent_entrants = []
+predictions = []
 
 @bot.event
 async def on_ready():
     print("ready")
 
 @bot.command()
-async def command1(ctx):
-    await ctx.send(f"command1 {ctx.author.mention}")
+async def p(ctx):
+    global predictions
+    # !p 1:bob 2:bill 3:Juan 4:Jill 5:Big soda 5:Sean 7:Bobith 7:Geoff
+    if len(currentEvent_entrants) == 0:
+        await ctx.send("Error: No tournament currently available")
+
+    p = ctx.message.content
+
+    try:
+        p = p.split(':')
+        for i in range(0,8):
+            p[i] = p[i][:-2]
+        del p[0]
+
+    except:
+        await ctx.send("Error making prediction. Match this syntax: !p 1:bob 2:bill 3:Juan 4:Jill 5:Big soda 5:Sean 7:Bobith 7:Geoff")
+        return
+    
+    print ("lol lmao")
+    print (p)
+    
+    if len(p) != 8:
+        await ctx.send("Error: include exactly 8 total participants")
+        return
+    
+    for i in range(0,8):
+        print (p[i])
+        if p[i] not in currentEvent_entrants:
+            await ctx.send(f"Error: {p[i]} not in entrants")
+            return
+
+    predictions.append(startgg.Prediction(name=ctx.author.name, prediction=p))
+
+    await ctx.send(f"Prediction made by: {ctx.author}")
+
 
 @bot.command()
-async def command2(ctx):
-    await ctx.send(f"command2 {ctx.author.mention}")
+async def print_p(ctx):
+
+    await ctx.send("Printing predictions:\n")
+
+    for p in predictions:
+        await ctx.send(f"{p.name, p.prediction}")
 
 @bot.event
 async def on_message(message):
+    global currentEvent_entrants
+    
     if message.author == bot.user or message.channel.name != "bot":
         return
 
@@ -43,11 +86,19 @@ async def on_message(message):
                 link = word
                 break
 
-        print (link)
-        entrants = startgg.get_entrants_from_link(link)
+        currentEvent_entrants = startgg.get_entrants_from_link(link)
 
-        print (entrants)
-        await message.channel.send(f"Entrants: {entrants}")
+        if currentEvent_entrants == None:
+            await message.channel.send("Invalid link lol. wtf u doing")
+            currentEvent_entrants = ""
+            return
+
+        e_string = ""
+        for entrant in currentEvent_entrants:
+            e_string += entrant + ", "
+        
+
+        await message.channel.send(f"Entrants: {e_string[:-2]}")
     
     await bot.process_commands(message)
 
