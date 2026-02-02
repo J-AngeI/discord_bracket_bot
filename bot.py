@@ -175,7 +175,7 @@ async def standings(ctx):
 
     winner_string = ""
     if len(predictions) > 1:
-        for i in range(0,len(predictions)):
+        for i in range(0,len(predictions)-1):
             winner_string+=predictions[i].name + ", "
             if predictions[i].accuracy != predictions[i+1].accuracy:
                 break
@@ -219,7 +219,7 @@ async def on_message(message):
         eventName = link[32:-23]
         currentEvent_entrants = startgg.get_entrants(eventID)
         acceptingPredictions = True
-        predictions = []
+        predictions.clear()
 
         if currentEvent_entrants == None:
             await message.add_reaction("❌")
